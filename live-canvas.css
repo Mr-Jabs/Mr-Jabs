@@ -1,0 +1,35 @@
+/* The editor-like layer is decorative; native pointer and page controls stay usable. */
+.live-canvas{position:fixed;inset:0;z-index:35;overflow:hidden;pointer-events:none;contain:strict;transition:opacity .2s}
+.live-canvas.is-hidden{opacity:0}
+.build-cursor{z-index:2}
+.collaborator-selection{position:absolute;left:0;top:0;pointer-events:none;border:1px solid var(--cursor-color);opacity:0;will-change:transform,opacity}
+.collaborator-selection>span{position:absolute;bottom:calc(100% + 3px);left:0;font:500 6px/1 var(--body);letter-spacing:.2px;color:var(--ink);background:var(--bg);padding:3px 4px;border-left:2px solid var(--cursor-color);white-space:nowrap}
+.collaborator-selection>i{position:absolute;width:4px;height:4px;background:var(--bg);border:1px solid var(--cursor-color)}
+.collaborator-selection>i:nth-of-type(1){left:-2px;top:-2px}.collaborator-selection>i:nth-of-type(2){right:-2px;top:-2px}.collaborator-selection>i:nth-of-type(3){right:-2px;bottom:-2px}.collaborator-selection>i:nth-of-type(4){left:-2px;bottom:-2px}
+.build-cursor{position:absolute;left:0;top:0;will-change:transform;color:var(--cursor-color);filter:drop-shadow(0 2px 3px var(--shadow))}
+.build-cursor svg{display:block;width:20px;height:24px;overflow:visible}
+.build-cursor>span{display:block;position:absolute;left:15px;top:23px;font:600 8px/1 var(--body);letter-spacing:.2px;color:var(--cursor-label);background:var(--cursor-color);border:1px solid var(--line);border-radius:2px 6px 6px 6px;padding:6px 9px;white-space:nowrap}
+.build-cursor.is-clicking:after{content:'';position:absolute;top:-10px;left:-10px;width:26px;height:26px;border:1px solid var(--cursor-color);border-radius:50%;animation:canvas-click .55s ease-out forwards}
+@keyframes canvas-click{from{transform:scale(.3);opacity:1}to{transform:scale(1.8);opacity:0}}
+.build-selection{position:absolute;top:0;left:0;border:1px solid var(--gold-ink);transform-origin:top left;will-change:transform,opacity;opacity:0}
+.build-selection .build-label{position:absolute;left:-1px;top:-22px;font:500 7px/1 var(--body);letter-spacing:.2px;background:var(--marigold);color:var(--aubergine);padding:5px 7px;white-space:nowrap}
+.build-size{position:absolute;bottom:-21px;left:50%;transform:translateX(-50%);background:var(--marigold);color:var(--aubergine);padding:3px 6px;font:600 6px/1 var(--body);white-space:nowrap;border-radius:2px}
+.build-handle{position:absolute;width:5px;height:5px;border:1px solid var(--gold-ink);background:var(--silver)}
+.build-handle:nth-of-type(1){left:-3px;top:-3px}.build-handle:nth-of-type(2){right:-3px;top:-3px}.build-handle:nth-of-type(3){right:-3px;bottom:-3px}.build-handle:nth-of-type(4){left:-3px;bottom:-3px}
+.build-guide{position:absolute;left:0;top:0;opacity:0;background:var(--accent-glow);will-change:transform,opacity}
+.build-guide.horizontal{width:100%;height:1px}.build-guide.vertical{height:100%;width:1px}
+.live-construction .reveal,.live-construction .reveal.visible{animation:none!important}
+.build-finished .reveal,.build-finished .reveal.visible{animation:none!important}
+.live-construction .build-piece[data-build-state="pending"]{opacity:0!important;visibility:hidden!important;animation:none!important;pointer-events:none}
+.live-construction .build-piece[data-build-state="drawing"]{visibility:visible;animation:canvas-create .42s cubic-bezier(.2,.75,.3,1) both!important}
+.build-piece[data-build-state="built"]{animation:none!important}
+@keyframes canvas-create{from{opacity:0;clip-path:inset(0 100% 0 0)}15%{opacity:1}to{opacity:1;clip-path:inset(0 0 0 0)}}
+.build-paused .build-piece[data-build-state="drawing"]{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){.live-construction .build-piece[data-build-state]{opacity:1!important;visibility:visible!important;animation:none!important;clip-path:none!important;pointer-events:auto}}
+/* The introduction has no persistent controls or decorative elements after completion. */
+.cursor-burst{position:absolute;left:0;top:0;pointer-events:none}
+.cursor-fragment{position:absolute;width:5px;height:3px;background:currentColor;opacity:0;will-change:transform,opacity}
+.cursor-burst-ring{position:absolute;left:0;top:0;width:28px;height:28px;border:1px solid currentColor;border-radius:50%;opacity:0;will-change:transform,opacity}
+@media(min-width:768px) and (max-width:1023px){.build-cursor.over-tablet{display:none}}
+@media(max-width:767px){.build-cursor.over-mobile{display:none}.build-cursor svg{width:17px;height:21px}.build-cursor>span{font-size:5px;padding:4px 5px;top:20px;left:12px}.build-guide,.collaborator-selection{display:none}.build-label{max-width:180px;overflow:hidden;text-overflow:ellipsis}}
+@media(prefers-reduced-motion:reduce){.live-canvas{display:none}}
