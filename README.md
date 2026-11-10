@@ -4,7 +4,7 @@
 
 I build Python and SQL workflows that turn raw data into information people can use. I’m studying Computer Science, specializing in Software Engineering, at FEU Institute of Technology, with graduation expected in 2028. I’m looking for a **Data Engineering internship** where I can contribute to data preparation, automation, and software development.
 
-[View portfolio](https://mr-jabs.vercel.app/) · [Download resume](assets/John-Benedict-Macatangay-Resume.docx) · [LinkedIn](https://www.linkedin.com/in/john-benedict-macatangay) · [Email](mailto:jabsmacatangay6@gmail.com)
+[View portfolio](https://mr-jabs.vercel.app/) · [Download resume](assets/John-Benedict-Macatangay-Resume.docx) · [LinkedIn](https://www.linkedin.com/in/john-benedict-macatangay-7b4515374/) · [Email](mailto:jabsmacatangay6@gmail.com)
 
 ![My portfolio: ice-silver canvas, aubergine typography, and project-focused navigation](assets/portfolio-preview.png)
 
