@@ -16,10 +16,47 @@ $$('.header nav a').forEach(link => link.addEventListener('click', () => {
   $('.menu-toggle span').textContent = '+';
 }));
 
+let activeCategory = 'all';
+let activeTechnology = 'all';
+
+function applyProjectFilters() {
+  let count = 0;
+  $$('.project-card').forEach(card => {
+    const matchesCategory = activeCategory === 'all' || card.dataset.category === activeCategory;
+    const matchesTechnology = activeTechnology === 'all' || card.dataset.technologies.split(' ').includes(activeTechnology);
+    card.hidden = !(matchesCategory && matchesTechnology);
+    if (!card.hidden) count++;
+  });
+  $$('[data-filter]').forEach(button => {
+    const active = button.dataset.filter === activeCategory;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  $$('[data-tech-filter]').forEach(button => {
+    const active = button.dataset.techFilter === activeTechnology;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  const label = document.querySelector('.technology-filters [data-tech-filter="' + activeTechnology + '"]').textContent;
+  $('#project-filter-count').textContent = count + (count === 1 ? ' project' : ' projects') + (activeTechnology === 'all' ? '' : ' · ' + label);
+  $('.project-empty').hidden = count > 0;
+  $('.project-filter-status [data-clear-filters]').hidden = activeCategory === 'all' && activeTechnology === 'all';
+  window.dispatchEvent(new Event('portfolio:layout'));
+}
 $$('[data-filter]').forEach(button => button.addEventListener('click', () => {
-  $$('[data-filter]').forEach(filter => { filter.classList.toggle('active', filter === button); filter.setAttribute('aria-pressed', filter === button); });
-  $$('.project-card').forEach(card => { card.hidden = button.dataset.filter !== 'all' && card.dataset.category !== button.dataset.filter; });
+  activeCategory = button.dataset.filter;
+  applyProjectFilters();
 }));
+$$('[data-tech-filter]').forEach(button => button.addEventListener('click', () => {
+  activeTechnology = button.dataset.techFilter === activeTechnology ? 'all' : button.dataset.techFilter;
+  applyProjectFilters();
+}));
+$$('[data-clear-filters]').forEach(button => button.addEventListener('click', () => {
+  activeCategory = 'all';
+  activeTechnology = 'all';
+  applyProjectFilters();
+}));
+applyProjectFilters();
 
 const projectContent = {
   "weather": {
@@ -128,10 +165,77 @@ $('#copy-email').addEventListener('click', async () => {
   catch { toast('Email: jabsmacatangay6@gmail.com'); }
 });
 
+const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
+const revealElements = $$('.section-heading, .project-card, .awards-intro, .awards-list, .about-grid, .journey-list, .contact-grid, .pipeline-flow > div');
 const revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
-  if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); }
+  if (entry.isIntersecting) {
+    entry.target.classList.add('is-revealed');
+    revealObserver.unobserve(entry.target);
+  }
 }), { threshold: .08 });
-$$('.section-heading, .project-card, .awards-intro, .awards-list, .about-grid, .journey-list, .contact-grid').forEach(element => { element.classList.add('reveal'); revealObserver.observe(element); });
+revealElements.forEach(element => {
+  element.classList.add('scroll-reveal');
+  if (element.getBoundingClientRect().top < innerHeight) element.classList.add('is-revealed');
+  revealObserver.observe(element);
+});
+function syncMotionPreference() {
+  document.documentElement.classList.toggle('motion-ready', !motionPreference.matches);
+  if (motionPreference.matches) revealElements.forEach(element => element.classList.add('is-revealed'));
+}
+syncMotionPreference();
+motionPreference.addEventListener('change', syncMotionPreference);
+document.addEventListener('focusin', event => event.target.closest('.scroll-reveal')?.classList.add('is-revealed'));
+
+let scrollFrame = 0;
+const pipelineNodes = $$('.pipeline-flow > div');
+function updateScrollDetails() {
+  scrollFrame = 0;
+  const distance = document.documentElement.scrollHeight - innerHeight;
+  document.documentElement.style.setProperty('--reading-progress', distance > 0 ? Math.max(0, Math.min(1, scrollY / distance)) : 0);
+  const positions = pipelineNodes.map(node => node.getBoundingClientRect().top + 34);
+  const span = positions.at(-1) - positions[0];
+  const progress = Math.max(0, Math.min(1, (innerHeight * .62 - positions[0]) / Math.max(span, 1)));
+  $('.pipeline-flow').style.setProperty('--pipeline-progress', progress);
+  $('.pipeline-flow').style.setProperty('--pipeline-span', span + 'px');
+  pipelineNodes.forEach((node, index) => node.classList.toggle('is-active', positions[index] <= innerHeight * .62));
+}
+function queueScrollDetails() {
+  if (!scrollFrame) scrollFrame = requestAnimationFrame(updateScrollDetails);
+}
+addEventListener('scroll', queueScrollDetails, { passive: true });
+addEventListener('resize', queueScrollDetails);
+addEventListener('portfolio:layout', queueScrollDetails);
+document.querySelectorAll('#credentials details').forEach(details => details.addEventListener('toggle', queueScrollDetails));
+new ResizeObserver(queueScrollDetails).observe(document.querySelector('main'));
+queueScrollDetails();
+
+// Tilt the preview surface only; project text stays level and readable.
+$$('.project-image').forEach(preview => {
+  let frame = 0;
+  let position = null;
+  function resetTilt() {
+    cancelAnimationFrame(frame);
+    frame = 0;
+    preview.style.setProperty('--tilt-x', '0deg');
+    preview.style.setProperty('--tilt-y', '0deg');
+  }
+  preview.addEventListener('pointermove', event => {
+    if (motionPreference.matches || event.pointerType !== 'mouse') return;
+    position = { x: event.clientX, y: event.clientY };
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      const bounds = preview.getBoundingClientRect();
+      const x = Math.max(-1, Math.min(1, (position.x - bounds.left) / bounds.width * 2 - 1));
+      const y = Math.max(-1, Math.min(1, (position.y - bounds.top) / bounds.height * 2 - 1));
+      preview.style.setProperty('--tilt-x', -y * 3 + 'deg');
+      preview.style.setProperty('--tilt-y', x * 3 + 'deg');
+    });
+  });
+  preview.addEventListener('pointerleave', resetTilt);
+  motionPreference.addEventListener('change', resetTilt);
+});
+
 const sectionObserver = new IntersectionObserver(entries => entries.forEach(entry => {
   if (entry.isIntersecting) $$('.header nav a').forEach(link => link.classList.toggle('current', link.hash === '#' + entry.target.id));
 }), { rootMargin: '-20% 0px -55% 0px' });

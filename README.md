@@ -1,42 +1,119 @@
-# John Benedict Macatangay — Data & Software
+# John Benedict Macatangay
 
-A personal portfolio for a Computer Science student seeking a Data Engineering internship. The content is based on the supplied resume and original project screenshots, with expanded descriptions that distinguish individual contributions, team work, ongoing development, and test results.
+**Computer Science student · Data Engineering & Software Development · Metro Manila, Philippines**
 
-## Run
+I build Python and SQL workflows that turn raw data into information people can use. I’m studying Computer Science, specializing in Software Engineering, at FEU Institute of Technology, with graduation expected in 2028. I’m looking for a **Data Engineering internship** where I can contribute to data preparation, automation, and software development.
 
-Requires Node.js. No package installation is needed.
+[View portfolio](https://mr-jabs.vercel.app/) · [Download resume](assets/John-Benedict-Macatangay-Resume.docx) · [LinkedIn](https://www.linkedin.com/in/john-benedict-macatangay) · [Email](mailto:jabsmacatangay6@gmail.com)
+
+![My portfolio: ice-silver canvas, aubergine typography, and project-focused navigation](assets/portfolio-preview.png)
+
+## Selected work
+
+This repository contains my portfolio website. The case studies present the following projects, my contributions, and the technologies used.
+
+| Project | What I worked on | Technologies |
+| --- | --- | --- |
+| **[Philippine Weather Analytics](https://mr-jabs.vercel.app/#work)** | An automated pipeline that collects Philippine weather data, cleans it, and stores it for analysis. A dashboard makes current conditions and weather trends easier to explore. | Python, SQL, PostgreSQL, ETL |
+| **[ChargePH](https://mr-jabs.vercel.app/#work)** | An ongoing charging-station map of the Philippines. My Python scripts collect, clean, and standardize station locations for the interactive map. | Python, ETL, geospatial data |
+| **[DocuFlow](https://mr-jabs.vercel.app/#work)** | A school document-request system co-built by a team of four for our undergraduate thesis. I designed and built student and admin screens and contributed to the backend. | Flask, MySQL, Docker, Google Cloud |
+
+<p>
+  <a href="assets/weatherph.png"><img src="assets/weatherph.png" width="32%" alt="Philippine Weather Analytics dashboard"></a>
+  <a href="assets/chargeph.png"><img src="assets/chargeph.png" width="32%" alt="ChargePH charging-station map"></a>
+  <a href="assets/docuflow.png"><img src="assets/docuflow.png" width="32%" alt="DocuFlow admin analytics interface"></a>
+</p>
+
+**DocuFlow evaluation:** 62 students, staff, and IT experts gave the system an ease-of-use rating of **4.24/5**. A load test with **50 simultaneous users** recorded approximately **0.12 seconds per response**. These figures describe the thesis system’s evaluation and load test.
+
+ChargePH’s station counts describe its project dataset, rather than a complete national inventory. It remains under development.
+
+## Experience
+
+- **Web Developer — SafeSpace, FEU Institute of Technology · February 2026–present.** Built and launched an anonymous student reporting website, with a calm interface and an admin dashboard using Flask, SQLite, and Chart.js.
+- **DataCamp Scholar — Data Engineering Pilipinas · May–September 2026.** Completed four months of hands-on Python, SQL, and data engineering courses through monthly learning missions.
+- **Student Researcher — FEU High School · September 2022–June 2023.** Co-developed a campus navigation app informed by student surveys; the project was nominated for presentation at the school Research Fair.
+
+## Certifications and training
+
+The certificates are available in the website’s Credentials section and as original PDFs below.
+
+| Credential | Issuer | Evidence |
+| --- | --- | --- |
+| SAP Certified — SAP Generative AI Developer | SAP | [Certificate](assets/certificates/John-Benedict-Macatangay-SAP-Generative-AI.pdf) · [Digital badge](https://www.credly.com/badges/3aec3b2e-bb8f-4caa-bd15-b5e9f5337dbe) |
+| PMI Project Management Ready® | Project Management Institute | [Certificate](assets/certificates/John-Benedict-Macatangay-PMI.pdf) |
+| IT Specialist — Python | Certiport / Pearson VUE | [Certificate](assets/certificates/John-Benedict-Macatangay-Python.pdf) |
+| CCNA: Introduction to Networks — course completion | Cisco Networking Academy / FEU Institute of Technology | [Certificate](assets/certificates/John-Benedict-Macatangay-Cisco-Networking.pdf) |
+
+## How this website is built
+
+The portfolio uses **HTML, CSS, and vanilla JavaScript**, with a small Node.js server for local development. Fonts, screenshots, the portrait, resume, and certificates are bundled locally. The deployed website serves static files directly.
+
+The opening animation treats the page as an editor canvas: a small team of decorative cursors picks up blocks and places them into their final positions. Each phase starts empty, then advances to the next view. The cursor changes from an arrow to an open hand, closes around a block during the drag, and releases it at an outlined destination.
+
+```mermaid
+flowchart LR
+    Entry[Homepage entry] --> Preference{Reduced motion?}
+    Preference -->|Yes| Content[Finished portfolio]
+    Preference -->|No| Blank[Empty phase]
+    Blank --> Pick[Approach and grab]
+    Pick --> Carry[Carry block into position]
+    Carry --> Place[Release and settle]
+    Place --> Next{More phases?}
+    Next -->|Yes| Blank
+    Next -->|No| Finish[Cursor bursts and cleanup]
+    Finish --> Content
+    Skip[Scroll, click, touch, or Escape] --> Content
+```
+
+### Implementation decisions
+
+- **Keep layout stable.** The original elements retain their space while temporary, non-interactive previews are carried in the overlay. Placing a block does not reflow the whole page.
+- **Use one animation clock.** `requestAnimationFrame` coordinates cursor movement, dragging, phase timing, and the final particle bursts.
+- **Let readers take over.** Scrolling, touching, clicking, or using the keyboard ends the intro and reveals the complete page. Direct section links also go straight to the content.
+- **Respect reduced motion.** The build sequence is skipped when requested by the visitor’s browser or operating system. Content remains readable without JavaScript.
+- **Clean up after the animation.** The overlay, temporary previews, animation loop, and intro event listeners are removed after completion or interruption.
+- **Keep interactions small.** Project-image tilt is limited to three degrees; text stays level. Technology pills filter the actual project gallery. The reading rail and pipeline progression follow native vertical scrolling.
+
+The cursor team is a visual metaphor, not a live collaboration service. It uses **9 cursors on desktop, 5 on tablet, and 3 on mobile**.
+
+## Run locally
+
+Requires Node.js. There are no npm dependencies to install.
 
 ```sh
+git clone https://github.com/Mr-Jabs/Mr-Jabs.git
+cd Mr-Jabs
 npm run dev
 ```
 
-Open http://localhost:3000. Use the `PORT` environment variable to choose another port. Run `npm run check` for JavaScript syntax checks.
+Open **http://localhost:3000**. The server binds to `127.0.0.1`. Use the `PORT` environment variable to choose another local port.
 
-## Content and assets
+To check JavaScript syntax:
 
-- `index.html`: biography, project gallery, certifications, pipeline walkthrough, skills, education, experience, and contact links.
-- `app.js`: the three project case studies, modal interactions, filters, email-copy feedback.
-- `assets/john-benedict-macatangay.png`: the supplied professional portrait.
-- `assets/weatherph.png`, `assets/chargeph.png`, and `assets/docuflow.png`: the supplied project screenshots, shown without color filters or compositing changes.
-- `assets/John-Benedict-Macatangay-Resume.docx`: an unchanged copy of the original resume for download.
-- Email, LinkedIn, and GitHub links come from the resume. Project-specific repository or deployment URLs were not supplied; the case studies link to the GitHub profile.
-- DocuFlow is described as a team-of-four thesis project. The 4.24/5 ease-of-use rating, 62 evaluators, approximately 0.12-second response time, and 50 simultaneous test users retain their evaluation context.
-- ChargePH is marked ongoing, and the screenshot's station count is identified as dataset coverage.
+```sh
+npm run check
+```
 
-The original sample identity, awards, showreel, and color-grading demonstration have been replaced. Older sample media files are no longer referenced by the site.
+Browser verification covers automatic entry, grab/drag/release states, skip and cleanup behavior, project filters, case-study dialogs, certificate PDFs, keyboard navigation, small-screen layouts, and reduced-motion preferences. The syntax command above is separate from those browser checks.
 
-## Design
+## Repository guide
 
-Ice silver `#DDE3E8` is the main canvas, with deep aubergine `#3A0F34` typography, orchid pink `#EAAADD`, and marigold `#EAA221` accents. Supporting text tones maintain contrast on the light background. Fonts and images are bundled locally. The background has no grain or haze overlay.
+```text
+index.html          Portfolio content and accessible page structure
+styles.css          Layout, typography, palette, and responsive rules
+refinements.css     Filters, hover feedback, reading rail, and pipeline
+app.js              Case studies, filters, navigation, and scroll interactions
+live-canvas.js      Build phases, cursor states, carried previews, and cleanup
+live-canvas.css     Cursor graphics, placement frames, and animation styles
+server.cjs          Dependency-free local static server
+assets/             Original project images, portrait, fonts, resume, certificates
+```
 
-## Entry animation
+For Vercel, use the **Other** preset, an empty Build Command, and `.` as the Output Directory. No environment variables are required. Local reference captures and checking scripts are excluded from Git through `.gitignore`.
 
-`live-canvas.js` and `live-canvas.css` run a decorative build sequence once per page load: 18 cursors on desktop, 10 on tablet, and 6 on mobile. Each view starts blank, then collaborators draw in content before the automatic tour advances. Long sections receive intermediate stops. After the final contact phase, the visible cursors burst into particles, and the overlay, animation loop, listeners, and observers are removed.
+## Contact
 
-Manual scrolling, touch, clicking, Escape, or keyboard browsing ends the intro and reveals all content. Reduced-motion preferences skip the intro entirely. Without JavaScript, all content remains visible. There are no bottom replay controls.
+I’m open to Data Engineering internship opportunities and conversations about the projects above.
 
-## Credential evidence
-
-The Credentials section includes the four original certificate PDFs in `assets/certificates/`, unchanged from the supplied files. Matching PNG previews were rendered from their first pages. SAP links to the Credly badge embedded in its certificate, and the Python and PMI entries link to the Certiport verification portal and show the certificate's verification code. The Cisco item is labeled as course completion, not a full CCNA certification. Issue/completion dates and SAP's expiry date are transcribed from the PDFs.
-
-The desktop navigation is centered independently of the right-aligned internship status. Mobile retains the collapsible menu.
+**[jabsmacatangay6@gmail.com](mailto:jabsmacatangay6@gmail.com)** · [LinkedIn](https://www.linkedin.com/in/john-benedict-macatangay) · [Portfolio](https://mr-jabs.vercel.app/)

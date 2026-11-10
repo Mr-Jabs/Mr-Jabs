@@ -33,3 +33,25 @@
 @media(min-width:768px) and (max-width:1023px){.build-cursor.over-tablet{display:none}}
 @media(max-width:767px){.build-cursor.over-mobile{display:none}.build-cursor svg{width:17px;height:21px}.build-cursor>span{font-size:5px;padding:4px 5px;top:20px;left:12px}.build-guide,.collaborator-selection{display:none}.build-label{max-width:180px;overflow:hidden;text-overflow:ellipsis}}
 @media(prefers-reduced-motion:reduce){.live-canvas{display:none}}
+
+/* The cursor and the block share the same carry path. */
+.build-cursor .cursor-hand{display:none;width:25px;height:28px;transform-origin:8px 18px}
+.build-cursor[data-action="approach"] .cursor-arrow,
+.build-cursor[data-action="grab"] .cursor-arrow,
+.build-cursor[data-action="carry"] .cursor-arrow,
+.build-cursor[data-action="release"] .cursor-arrow{display:none}
+.build-cursor[data-action="approach"] .cursor-hand-open,
+.build-cursor[data-action="release"] .cursor-hand-open{display:block}
+.build-cursor[data-action="grab"] .cursor-hand-closed,
+.build-cursor[data-action="carry"] .cursor-hand-closed{display:block;transform:rotate(-7deg)}
+.build-cursor[data-action]:not([data-action="idle"])>span{top:29px}
+.build-cursor[data-action]:not([data-action="idle"]):before{content:attr(data-action-label);position:absolute;top:49px;left:15px;white-space:nowrap;font:600 5px/1.2 var(--body);letter-spacing:.8px;color:var(--aubergine);background:var(--silver);border-left:2px solid var(--cursor-color);padding:4px 5px}
+.build-cursor.is-dropping:after{content:'';position:absolute;left:-7px;top:-4px;width:28px;height:28px;border:1px solid var(--cursor-color);border-radius:50%;animation:canvas-click .45s ease-out forwards}
+.carried-element{position:absolute;left:0;top:0;z-index:1;overflow:hidden;pointer-events:none;contain:layout paint;border:1px solid var(--cursor-color);box-shadow:0 8px 24px var(--shadow);transform-origin:18px 14px;will-change:transform,opacity}
+.carried-element.is-carried{box-shadow:0 12px 30px var(--shadow)}
+.carried-element .carried-copy{pointer-events:none!important;transition:none!important}
+.element-slot{position:absolute;left:0;top:0;pointer-events:none;border:1px dashed var(--cursor-color);background:color-mix(in srgb,var(--cursor-color) 5%,transparent);will-change:opacity}
+.element-slot>span{position:absolute;bottom:calc(100% + 3px);left:0;white-space:nowrap;font:500 6px/1.2 var(--body);color:var(--aubergine);background:var(--silver);padding:3px 5px;border-left:2px solid var(--cursor-color)}
+.live-canvas[data-mode="guided"] .build-selection,.live-canvas[data-mode="guided"] .collaborator-selection,.live-canvas[data-mode="guided"] .build-guide{display:none}
+@keyframes canvas-create{from{opacity:0;translate:0 4px}to{opacity:1;translate:0 0}}
+@media(max-width:767px){.build-cursor .cursor-hand{width:21px;height:25px}.element-slot>span{font-size:5px}.build-cursor[data-action]:not([data-action="idle"])>span{top:25px}.build-cursor[data-action]:not([data-action="idle"]):before{top:43px;font-size:4px}}
