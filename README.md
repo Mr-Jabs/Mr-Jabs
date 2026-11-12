@@ -36,7 +36,7 @@ ChargePH’s station counts describe its project dataset, rather than a complete
 
 ## Certifications and training
 
-The certificates are available in the website’s Credentials section and as original PDFs below.
+All four certificate previews are displayed directly in the website’s Credentials section, with descriptions and links to the original PDFs below.
 
 | Credential | Issuer | Evidence |
 | --- | --- | --- |
@@ -63,14 +63,16 @@ flowchart LR
     Next -->|Yes| Blank
     Next -->|No| Finish[Cursor bursts and cleanup]
     Finish --> Content
-    Skip[Scroll, click, touch, or Escape] --> Content
+    Skip[Scroll, click, touch, or Escape] --> Settle[Settle visible blocks and dissolve cursors]
+    Settle --> Content
 ```
 
 ### Implementation decisions
 
 - **Keep layout stable.** The original elements retain their space while temporary, non-interactive previews are carried in the overlay. Placing a block does not reflow the whole page.
 - **Use one animation clock.** `requestAnimationFrame` coordinates cursor movement, dragging, phase timing, and the final particle bursts.
-- **Let readers take over.** Scrolling, touching, clicking, or using the keyboard ends the intro and reveals the complete page. Direct section links also go straight to the content.
+- **Let readers take over.** Scrolling, touching, clicking, or using the keyboard stops the automatic tour. Unfinished content in view settles in with a short stagger, and the cursors dissolve while native navigation stays available. Direct section links go straight to the content.
+- **Make the evidence easy to read.** Main body copy uses 16px or larger text. Certificate previews and descriptions are displayed without an accordion, with full-size PDFs one link away.
 - **Respect reduced motion.** The build sequence is skipped when requested by the visitor’s browser or operating system. Content remains readable without JavaScript.
 - **Clean up after the animation.** The overlay, temporary previews, animation loop, and intro event listeners are removed after completion or interruption.
 - **Keep interactions small.** Project-image tilt is limited to three degrees; text stays level. Technology pills filter the actual project gallery. The reading rail and pipeline progression follow native vertical scrolling.

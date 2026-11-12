@@ -59,7 +59,7 @@
     const pieceSelectors = [
       '.hero-top, .hero-name, .hero-portrait, .hero-copy > *, .hero-stats > *, .hero-bottom > *',
       '.section-kicker, .section-heading > *, .filters, .project-card, .timeline',
-      '.awards-intro > *, .awards-list > *',
+      '.awards-intro > *, .awards-list > .list-label, .awards-list > .credentials-note, .credential-heading, .certificate-preview, .credential-proof > div, .credential-resume',
       '.pipeline-intro > *, .pipeline-flow > div',
       '.section-kicker, .section-heading > *, .column-title, .skill-line, .tool-list, .process-list > li, blockquote, .education-strip',
       '.journey > div:first-child > *, .journey-list > div',
@@ -99,17 +99,17 @@
       assemblyPlanned = false;
     }
 
-    function revealEverything() {
+    function revealEverything(soft = false) {
       document.documentElement.classList.remove('live-construction');
       targets.forEach(element => { element.dataset.buildState = 'built'; element.classList.remove('canvas-placing'); });
-      assemblyJobs.forEach(removeCarry);
+      assemblyJobs.forEach(job => removeCarry(job, soft));
       assemblyJobs = [];
       assemblyPlanned = false;
       cursors.forEach(cursor => { cursor.buildJob = null; });
     }
 
     function planAssembly() {
-      assemblyJobs.forEach(removeCarry);
+      assemblyJobs.forEach(job => removeCarry(job));
       cursors.forEach(cursor => { cursor.buildJob = null; });
       const headerBottom = document.querySelector('.header').getBoundingClientRect().bottom;
       const pieces = targets.filter(element => {
@@ -123,9 +123,13 @@
       layoutDirty = true;
     }
 
-    function removeCarry(job) {
-      job.ghost?.remove();
-      job.slot?.remove();
+    function removeCarry(job, soft = false) {
+      [job.ghost, job.slot].filter(Boolean).forEach(element => {
+        if (soft) {
+          const fade = element.animate([{ opacity: getComputedStyle(element).opacity }, { opacity: 0 }], { duration: 200, fill: 'forwards' });
+          fade.finished.then(() => element.remove(), () => element.remove());
+        } else element.remove();
+      });
       job.ghost = null;
       job.slot = null;
     }
@@ -249,6 +253,11 @@
       document.documentElement.classList.add('build-finished');
       revealEverything();
       document.documentElement.classList.remove('build-paused');
+      document.documentElement.classList.remove('build-finishing');
+      targets.forEach(element => {
+        delete element.dataset.handoff;
+        ['--handoff-delay', '--handoff-opacity', '--handoff-offset'].forEach(property => element.style.removeProperty(property));
+      });
       layer.remove();
       lifecycle.abort();
       dialogObserver.disconnect();
@@ -256,15 +265,30 @@
     }
 
     function interruptTour() {
-      cleanUp();
+      if (motionPreference.matches) cleanUp();
+      else finishBuild(true);
     }
 
-    function finishBuild() {
+    function finishBuild(handoff = false) {
       if (disposed || finaleStarted !== null) return;
       tourEnabled = false;
       scrollTransition = null;
+      if (handoff) {
+        document.documentElement.classList.add('build-finishing');
+        let order = 0;
+        targets.forEach(element => {
+          const box = element.getBoundingClientRect();
+          if (box.bottom <= 0 || box.top >= innerHeight || !box.width || !box.height) return;
+          element.closest('.scroll-reveal')?.classList.add('is-revealed');
+          if (element.dataset.buildState === 'built') return;
+          element.style.setProperty('--handoff-opacity', getComputedStyle(element).opacity);
+          element.style.setProperty('--handoff-offset', element.dataset.buildState === 'pending' ? '10px' : '0px');
+          element.dataset.handoff = 'true';
+          element.style.setProperty('--handoff-delay', `${Math.min(order++ * 30, 180)}ms`);
+        });
+      }
       document.documentElement.classList.add('build-finished');
-      revealEverything();
+      revealEverything(handoff);
       finaleStarted = elapsed;
       layer.dataset.state = 'bursting';
       selection.remove();
@@ -272,6 +296,8 @@
       guides.forEach(guide => guide.remove());
       layer.querySelectorAll('.collaborator-selection').forEach(frame => frame.remove());
       cursors.slice(0, cursorCount()).forEach((cursor, index) => {
+        cursor.exitOpacity = Number(getComputedStyle(cursor.element).opacity);
+        cursor.softExit = handoff;
         cursor.element.classList.remove('is-clicking');
         const burst = document.createElement('div');
         burst.className = 'cursor-burst';
@@ -296,14 +322,14 @@
       bursts.forEach(({ cursor, particles, ring, delay }, index) => {
         const age = elapsed - finaleStarted - delay;
         const pop = Math.max(0, Math.min(age / 100, 1));
-        cursor.element.style.opacity = age < 100 ? '1' : '0';
-        cursor.element.style.transform = `translate3d(${cursor.x}px,${cursor.y}px,0) scale(${1 + pop * .25})`;
+        cursor.element.style.opacity = String(age < 100 ? cursor.exitOpacity * (cursor.softExit ? 1 - pop : 1) : 0);
+        cursor.element.style.transform = `translate3d(${cursor.x}px,${cursor.y}px,0) scale(${1 + pop * (cursor.softExit ? 0 : .25)})`;
         const progress = Math.max(0, Math.min((age - 100) / 650, 1));
         ring.style.opacity = age >= 100 ? String((1 - progress) * .65) : '0';
         ring.style.transform = `translate(-50%,-50%) scale(${.2 + progress * 3})`;
         particles.forEach((particle, particleIndex) => {
           const angle = particleIndex / particles.length * Math.PI * 2 + index * .45;
-          const distance = (32 + (particleIndex % 4) * 13) * (1 - (1 - progress) ** 2);
+          const distance = (cursor.softExit ? 12 + particleIndex % 4 * 5 : 32 + particleIndex % 4 * 13) * (1 - (1 - progress) ** 2);
           particle.style.opacity = age >= 100 ? String(1 - progress) : '0';
           particle.style.transform = `translate3d(${Math.cos(angle) * distance}px,${Math.sin(angle) * distance + progress ** 2 * 22}px,0) rotate(${progress * 220 + particleIndex * 36}deg) scale(${1 - progress * .7})`;
         });
@@ -489,7 +515,7 @@
     function syncPlayback() {
       if (disposed) return;
       if (motionPreference.matches) { cleanUp(); return; }
-      const suspended = document.hidden || document.querySelector('dialog[open]') || document.querySelector('.header.menu-open');
+      const suspended = document.hidden || (finaleStarted === null && (document.querySelector('dialog[open]') || document.querySelector('.header.menu-open')));
       cancelAnimationFrame(frameId);
       frameId = 0;
       lastTime = 0;

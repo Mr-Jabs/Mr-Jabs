@@ -54,4 +54,6 @@
 .element-slot>span{position:absolute;bottom:calc(100% + 3px);left:0;white-space:nowrap;font:500 6px/1.2 var(--body);color:var(--aubergine);background:var(--silver);padding:3px 5px;border-left:2px solid var(--cursor-color)}
 .live-canvas[data-mode="guided"] .build-selection,.live-canvas[data-mode="guided"] .collaborator-selection,.live-canvas[data-mode="guided"] .build-guide{display:none}
 @keyframes canvas-create{from{opacity:0;translate:0 4px}to{opacity:1;translate:0 0}}
+.build-finishing .build-piece[data-handoff]{animation:canvas-handoff .4s cubic-bezier(.2,.7,.3,1) var(--handoff-delay,0ms) both!important}
+@keyframes canvas-handoff{from{opacity:var(--handoff-opacity,0);translate:0 var(--handoff-offset,10px)}to{opacity:1;translate:0 0}}
 @media(max-width:767px){.build-cursor .cursor-hand{width:21px;height:25px}.element-slot>span{font-size:5px}.build-cursor[data-action]:not([data-action="idle"])>span{top:25px}.build-cursor[data-action]:not([data-action="idle"]):before{top:43px;font-size:4px}}

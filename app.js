@@ -205,7 +205,6 @@ function queueScrollDetails() {
 addEventListener('scroll', queueScrollDetails, { passive: true });
 addEventListener('resize', queueScrollDetails);
 addEventListener('portfolio:layout', queueScrollDetails);
-document.querySelectorAll('#credentials details').forEach(details => details.addEventListener('toggle', queueScrollDetails));
 new ResizeObserver(queueScrollDetails).observe(document.querySelector('main'));
 queueScrollDetails();
 
